@@ -2,7 +2,7 @@ import Loader from '@/components/shared/Loader';
 import { Button } from '@/components/ui/button';
 import { useUserContext } from '@/Context/AuthContext'
 import { useFollowing, useGetUserById, } from '@/lib/react-query/queriesAndMutation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import GridPostList from '@/components/shared/GridPostList';
@@ -10,43 +10,46 @@ import { ID } from 'appwrite';
 const Profile = () => {
   const { id } = useParams();
   const { user } = useUserContext();
- 
-  const { data: posts, isPending: loading } = useGetUserById(id);
-  const {mutateAsync : following , isPending } = useFollowing();
 
-  const [follows , setFollows] = useState([])
+  const { data: posts, isPending: loading, refetch } = useGetUserById(id);
+  const { mutateAsync: following, isPending: followPending } = useFollowing();
 
-  if (loading || loading) return (<Loader />)
-    
+  const [follows, setFollows] = useState([])
+
+  if (loading) return (<Loader />)
+
+
   const userGrid = [...posts.posts].reverse()
 
   const userLiked = [...posts.liked].reverse()
-  
+
   const FollowHandler = async (e) => {
     e.stopPropagation();
+    setFollows(posts.follower)
     let newFollow = [...follows];
     const hasFollow = newFollow.includes(id);
-  
+
     if (hasFollow) {
       newFollow = newFollow.filter((followId) => followId !== id);
     } else {
       newFollow.push(id);
     }
-  
+
     try {
-      await following({ followId: user.id, followerId : id });
+      const da = await following({ followId: user.id, followerId: id });
       setFollows(newFollow);
+      refetch()
     } catch (err) {
       console.error("Error following/unfollowing:", err);
     }
   };
-  
+
 
   return (
     <div className='profile-container '>
       <div className='profile-inner_container'>
         <div className='flex w-full gap-8 px-2 md:px-4'>
-          <img src={posts.imageUrl} alt="profile-img" className='md:w-20 md:h-20 h-[100px] w-[100px] rounded-full' />
+          <img src={posts.imageUrl} alt="profile-img" className='md:w-20 md:h-20 h-[100px] w-[100px] rounded-full object-cover' />
 
           <div className='flex w-full flex-col flex-center gap-4'>
             <div className='flex lg:gap-20 md:gap-14 gap-6 w-full flex-wrap'>
@@ -62,7 +65,9 @@ const Profile = () => {
                   <p>Edit Profile</p>
                 </Link>
               ) : (
-                <Button className='shad-button_primary' onClick={FollowHandler}>{isPending ? <Loader/> : posts.follower.includes(user.id) ? 'Unfollow' : 'Follow'}</Button>
+                <Button className='shad-button_primary' onClick={(e) => {
+                  FollowHandler(e)
+                }}> {followPending ? <Loader/> : posts.follower.includes(user.id) ? 'Unfollow' : 'Follow'} </Button>
               )}
             </div>
 
