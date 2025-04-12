@@ -67,7 +67,6 @@ export class AuthService {
             return session;
         } catch (error) {
             console.log(error);
-            
         }
     }
 
@@ -99,12 +98,13 @@ export class AuthService {
             return session;
         } catch (error) {
             console.log(error);
-            
         }
     }
 
     async createPost({userId, caption, file, location, tags}){
         try {
+
+            
 
             //upload image 
             const uploadedFile = await this.uploadFile(file[0])
@@ -168,13 +168,9 @@ export class AuthService {
 
     async getFilePreview(fileId) {
         try {
-            const fileUrl = this.storage.getFilePreview(
+            const fileUrl = this.storage.getFileView(
                 conf.BucketId,
                 fileId,
-                2000,
-                2000,
-                "top",
-                100,
             )
             
             return fileUrl;

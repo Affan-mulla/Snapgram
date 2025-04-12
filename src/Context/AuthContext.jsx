@@ -41,9 +41,7 @@ const AuthProvider = ({ children }) => {
           imageUrl: currentUser.imageUrl,
           bio: currentUser.bio,
         })
-
         setIsAuthenticated(true);
-
         return true;
       }
 
