@@ -138,12 +138,16 @@ export class AuthService {
                     tags : tag
                 }
             )
+
+
             
 
             if (!newPost) {
                 await this.deleteFile(uploadedFile.$id)
                 throw error
             }
+
+            return newPost;
 
         } catch (error) {
             console.log(error);

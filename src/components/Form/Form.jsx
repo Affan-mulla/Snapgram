@@ -49,6 +49,9 @@ const PostForm = ({ post , action}) => {
                 imageUrl : post.imageUrl,
             })
 
+            
+            
+
             if (!updatedPost) {
                 toast({
                     title: 'Please try again.'
@@ -62,6 +65,7 @@ const PostForm = ({ post , action}) => {
             userId : user.id,  
             ...values
         })
+        console.log(newPost);
 
         if (!newPost) {
             toast({
